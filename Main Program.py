@@ -12,6 +12,7 @@ SCREEN_HEIGHT = 950
 CENTER = SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
 GAME_NAME = "Juego"
 Game_active = False
+
 #levels
 LEVEL = 0
 LEVEL_CHANGES = 100
@@ -35,40 +36,41 @@ Shoot_time = SHOOT_TIME
 SPEED_SHOOT = 10
 
 #Alien
-ALIEN_COUNT = 1
-EJE_X_ALIEN1 = random.choice(range(SCREEN_WIDTH - 450, SCREEN_WIDTH - 100))
-EJE_X_ALIEN2 = random.choice(range(SCREEN_WIDTH - 450, SCREEN_WIDTH - 100))
-EJE_X_ALIEN3 = random.choice(range(SCREEN_WIDTH - 450, SCREEN_WIDTH - 100))
-    #Alien_Heights = [SCREEN_HEIGHT - 325, SCREEN_HEIGHT - 280, SCREEN_HEIGHT - 235]
-    #EJE_Y_ALIEN = random.choice(Alien_Heights)
-EJE_Y_ALIEN1 = SCREEN_HEIGHT - SCREEN_HEIGHT// 10 * 7
-EJE_Y_ALIEN2 = SCREEN_HEIGHT - SCREEN_HEIGHT// 10 * 8
-EJE_Y_ALIEN3 = SCREEN_HEIGHT - SCREEN_HEIGHT// 10 * 9
-ALIEN_RECT_WIDTH = 30
-ALIEN_RECT_HEIGHT = 30
-    #ALIEN_POSITION = [EJE_X_ALIEN, EJE_Y_ALIEN]
-ALIEN_SPEED_MOVEMENT1 = random.uniform(6,7)
-ALIEN_SPEED_MOVEMENT2 = random.uniform(5,6)
-ALIEN_SPEED_MOVEMENT3 = random.uniform(4,5)
-    #RANDOM_SPEED = random.uniform(0,1)
-    #SPAWNING_ALIEN_Y = SCREEN_HEIGHT - 325
+EJE_Y_ALIEN1 = SCREEN_HEIGHT - 375
+ALIEN1_SURF = pygame.image.load('Final-proyect---Minigame/Game_project/Graphics/Enemies/Enemie A/enemies_A_ 1.png')#.convert_alpha()
+ALIEN_SPAWN_RIGHT = 1
+ALIEN_SPAWN_LEFT = 2
+SPAWN_SIDE = [ALIEN_SPAWN_LEFT,ALIEN_SPAWN_RIGHT]
+random_spawn1_side = random.choice(SPAWN_SIDE)
+EJE_1_X_ALIEN1 = -15
+EJE_2_X_ALIEN1 = 515
+EJE_Y_ALIEN1 = SCREEN_HEIGHT - 375
+ALIEN_SPEED_MOVEMENT1 = 5
+ALIEN1_RECT_Left = ALIEN1_SURF.get_rect(center=(EJE_1_X_ALIEN1,EJE_Y_ALIEN1))
+ALIEN1_RECT_Right = ALIEN1_SURF.get_rect(center=(EJE_2_X_ALIEN1,EJE_Y_ALIEN1))
+
+#Alien Shooting
+shooting_positions = [50,125,200,250,300,375,450]
+alien_bullet_surf = pygame.image.load('Final-proyect---Minigame/Game_project/Graphics/Enemies/bullet_enemies.png')#.convert_alpha()
+alien_bullet_list = []
+ALIEN_SHOOT_TIME = 50
+alien_shoot_time = ALIEN_SHOOT_TIME
+ALIEN_SPEED_SHOT = 5
+alien_shoot_x = EJE_1_X_ALIEN1
+alien_shoot_y = EJE_Y_ALIEN1
 
 # Basic configuration
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption(GAME_NAME)
 clock = pygame.time.Clock()
-font = pygame.font.Font('Game_project/font/Pixeltype.ttf', 50)
-# Elements
+font = pygame.font.Font('Final-proyect---Minigame/Game_project/font/Pixeltype.ttf', 50)
+
 #Player
-player_surf = pygame.image.load('Game_project/Graphics/Player/player_1.png').convert_alpha()
+player_surf = pygame.image.load('Final-proyect---Minigame/Game_project/Graphics/Player/player_1.png')#.convert_alpha()
 player_rect = player_surf.get_rect(center = (EJE_X_PLAYER, EJE_Y_PLAYER))
-bullet_player_surf = pygame.image.load('Game_project/Graphics/Player/bullet_player_1.png').convert_alpha()
+bullet_player_surf = pygame.image.load('Final-proyect---Minigame/Game_project/Graphics/Player/bullet_player_1.png')#.convert_alpha()
 bullet_player_rect = bullet_player_surf.get_rect(center = (EJE_X_SHOOT, EJE_Y_SHOOT))
-
 bullets = []
-
-#Enemies
-
 
 # Scene start
 instructions_surf = font.render('Press SPACE for start', False, 'White')
@@ -105,6 +107,30 @@ def move_bullets():
 def screen_bullets():
     for rect in bullets:
         screen.blit(bullet_player_surf, rect)
+
+def alien_movement(alien_rect):
+    global ALIEN_SPEED_MOVEMENT1
+    if alien_rect.left == SCREEN_WIDTH - 560 or alien_rect.right == SCREEN_WIDTH + 60:
+        ALIEN_SPEED_MOVEMENT1 *= -1
+
+def alien_shooting():
+    for alien_bullets in alien_bullet_list:
+        alien_bullets.y += ALIEN_SPEED_SHOT
+
+def draw_alien_bullets():
+    for alien_bullets in alien_bullet_list:
+        screen.blit(alien_bullet_surf,alien_bullets)
+        if alien_bullets.y > SCREEN_HEIGHT:
+            alien_bullet_list.remove(alien_bullets)
+
+def move_alien_bullets(alien_rect):
+    global alien_shoot_time
+    if alien_shoot_time > 0:
+        alien_shoot_time -= 1
+    if alien_shoot_time == 0:
+        alien_bullets = pygame.Rect(alien_rect.centerx, alien_rect.centery, 10,10)
+        alien_bullet_list.append(alien_bullets)
+        alien_shoot_time = ALIEN_SHOOT_TIME
 
 while True:
     # Check events
@@ -202,10 +228,14 @@ while True:
             screen.blit(completed_surf,completed_rect)
             screen.blit(instructions_2_surf, instructions_2_rect_game_over)
 
+    alien_bullet1_x = EJE_1_X_ALIEN1
+    alien_bullet2_x = EJE_2_X_ALIEN1
     if Game_active == True:
         screen.fill('black')
-        bullets = move_bullets()
+        move_bullets()
         screen_bullets()
+        #alien_shooting()
+        #screen_alien_bullets()
         screen.blit(player_surf, player_rect)
         screen.blit(score_surf, score_rect)
         if LEVEL == 1:
@@ -213,21 +243,22 @@ while True:
                 level_surf = font.render(f'Level {LEVEL}', False, 'White')
                 screen.blit(level_surf,level_rect)
                 LEVEL_CHANGES -= 1
-            # Spawning
-            pygame.draw.rect(screen, 'Red', (EJE_X_ALIEN1, EJE_Y_ALIEN1, ALIEN_RECT_WIDTH, ALIEN_RECT_HEIGHT), 25)
-            pygame.draw.rect(screen, 'Purple', (EJE_X_ALIEN2, EJE_Y_ALIEN2, ALIEN_RECT_WIDTH, ALIEN_RECT_HEIGHT),25)
-            pygame.draw.rect(screen, 'Blue', (EJE_X_ALIEN3, EJE_Y_ALIEN3, ALIEN_RECT_WIDTH, ALIEN_RECT_HEIGHT), 25)
 
-            # Alien Movement
-            EJE_X_ALIEN1 -= ALIEN_SPEED_MOVEMENT1
-            EJE_X_ALIEN2 -= ALIEN_SPEED_MOVEMENT2
-            EJE_X_ALIEN3 -= ALIEN_SPEED_MOVEMENT3
-            if EJE_X_ALIEN1 <= SCREEN_WIDTH - 500 or EJE_X_ALIEN1 >= SCREEN_WIDTH - 50:
-                ALIEN_SPEED_MOVEMENT1 *= -1
-            if EJE_X_ALIEN2 <= SCREEN_WIDTH - 500 or EJE_X_ALIEN2 >= SCREEN_WIDTH - 50:
-                ALIEN_SPEED_MOVEMENT2 *= -1
-            if EJE_X_ALIEN3 <= SCREEN_WIDTH - 500 or EJE_X_ALIEN3 >= SCREEN_WIDTH - 50:
-                ALIEN_SPEED_MOVEMENT3 *= -1
+            if random_spawn1_side == ALIEN_SPAWN_LEFT:
+                ALIEN1_RECT_Left.x -= ALIEN_SPEED_MOVEMENT1
+                screen.blit(ALIEN1_SURF,ALIEN1_RECT_Left)
+                alien_movement(ALIEN1_RECT_Left)
+                alien_shooting()
+                draw_alien_bullets()
+                move_alien_bullets(ALIEN1_RECT_Left)
+
+            if random_spawn1_side == ALIEN_SPAWN_RIGHT:
+                ALIEN1_RECT_Right.x -= ALIEN_SPEED_MOVEMENT1
+                screen.blit(ALIEN1_SURF,ALIEN1_RECT_Right)
+                alien_movement(ALIEN1_RECT_Right)
+                alien_shooting()
+                draw_alien_bullets()
+                move_alien_bullets(ALIEN1_RECT_Right)
 
         elif LEVEL == 2:
             if LEVEL_CHANGES > 0:
