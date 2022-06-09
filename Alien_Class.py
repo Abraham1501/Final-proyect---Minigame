@@ -10,12 +10,12 @@ class alien(pygame.sprite.Sprite):
         self.EJE_1_X_ALIEN1= EJE_X_1
         self.EJE_2_X_ALIEN1 = EJE_X_2
         self.EJE_Y_ALIEN1 = EJE_Y_ALIEN1
-        file_path = 'Game_project\Graphics\Enemies\Enemies '+alien+'\enemies_'+alien+'_ 1.png'
+        file_path = 'Game_project/Graphics/Enemies/Enemies '+alien+'/enemie_'+alien+'_1.png'
         self.alien_surf1 = pygame.image.load(file_path).convert_alpha()
         self.alien_rect_left = self.alien_surf1.get_rect(center=(self.EJE_1_X_ALIEN1,self.EJE_Y_ALIEN1))
         self.alien_rect_right = self.alien_surf1.get_rect(center=(self.EJE_2_X_ALIEN1,self.EJE_Y_ALIEN1))
         
-        self.ALIEN_SPEED_MOVEMENT1 = 3
+        self.ALIEN_SPEED_MOVEMENT1 = 2
         self.ALIEN_ALIVE = True
         self.ALIEN_RESPAWN_COOLDOWN = 30
 
@@ -29,9 +29,9 @@ class alien(pygame.sprite.Sprite):
         self.shooting_positions = [50,125,200,250,300,375,450]
         self.bullet_enemie_surf = pygame.image.load('Game_project/Graphics/Enemies/bullet_enemies.png').convert_alpha()
         self.bullet1 = []
-        self.ALIEN_SHOOT_TIME = 50
+        self.ALIEN_SHOOT_TIME = 60
         self.alien_shoot_time = self.ALIEN_SHOOT_TIME
-        self.ALIEN_SPEED_SHOT = 5
+        self.ALIEN_SPEED_SHOT = 4
 
     def choose_spawn(self,screen):
         if self.random_spawn1_side == self.ALIEN_SPAWN_LEFT:
