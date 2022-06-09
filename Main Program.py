@@ -30,10 +30,11 @@ font = pygame.font.Font('Game_project/font/Pixeltype.ttf', 50)
 font_2 = pygame.font.Font('Game_project/font/Pixeltype.ttf', 100)
 
 #Alien
-
 EJE_1_X_ALIEN1 = -15
 EJE_2_X_ALIEN1 = 515
 EJE_Y_ALIEN1 = SCREEN_HEIGHT - 375
+EJE_Y_ALIEN2 = SCREEN_HEIGHT - 465
+EJE_Y_ALIEN3 = SCREEN_HEIGHT - 555
 
 ALIEN_ALIVE = True
 
@@ -68,7 +69,7 @@ player_stand_surf = pygame.image.load('Game_project/Graphics/Player/player_1.png
 player_stand_surf = pygame.transform.scale2x(player_stand_surf)
 player_stand_surf = pygame.transform.scale2x(player_stand_surf)
 player_stand_rect = player_stand_surf.get_rect(center=(CENTER[0], SCREEN_HEIGHT // 4 * 3))
-enemy_A_stand_surf = pygame.image.load('Game_project/Graphics/Enemies/Enemies A/enemies_A_ 1.png').convert_alpha()
+enemy_A_stand_surf = pygame.image.load('Game_project/Graphics/Enemies/Enemies A/enemie_A_1.png').convert_alpha()
 enemy_A_stand_surf = pygame.transform.scale2x(enemy_A_stand_surf)
 enemy_A_stand_rect = enemy_A_stand_surf.get_rect(center=(SCREEN_WIDTH//4, SCREEN_HEIGHT//10 * 3))
 enemy_B_stand_surf = pygame.image.load('Game_project/Graphics//Enemies/Enemies B/enemie_B_1.png').convert_alpha()
@@ -123,7 +124,10 @@ def screen_backgrounds(Cont):
         i += 1
 
 player = Player(SCREEN_WIDTH,SCREEN_HEIGHT)
-Alien = alien('A', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN1, SCREEN_WIDTH, SCREEN_HEIGHT)
+bullet_player_rect = player.bullet_player_rect
+Alien1 = alien('A', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN1, SCREEN_WIDTH, SCREEN_HEIGHT)
+Alien2 = alien('B', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN2, SCREEN_WIDTH, SCREEN_HEIGHT)
+Alien3 = alien('C', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN3, SCREEN_WIDTH, SCREEN_HEIGHT)
 
 while True:
     # Check events
@@ -217,7 +221,9 @@ while True:
 
         player.update(screen, bullet_enemie_rect)
         Game_active = player.colisions(bullet_enemie_rect, Game_active)
-        Alien.alien_update(screen)
+        Alien1.alien_update(screen)
+        Alien2.alien_update(screen)
+        Alien3.alien_update(screen)
 
         #level 1
         if LEVEL == 1:
@@ -225,7 +231,11 @@ while True:
                 LEVEL_CHANGES = level_changes(LEVEL_CHANGES)
             
             if ALIEN_ALIVE == True:
-                Alien.choose_spawn(screen)
+                Alien1.choose_spawn(screen)
+                if bullet_player_rect.colliderect(Alien1.alien_rect_left) or bullet_player_rect.colliderect(Alien1.alien_rect_right):
+                    print("hit")
+                Alien2.choose_spawn(screen)
+                Alien3.choose_spawn(screen)
                 
                 #    player_shot_hit(ALIEN1_RECT_Left)
                 #    ALIEN_ALIVE = False
