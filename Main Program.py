@@ -2,6 +2,7 @@ import pygame
 from sys import exit
 import random
 from Object_classes import Player
+from Alien_Class import alien
 
 pygame.init()
 
@@ -29,33 +30,16 @@ font = pygame.font.Font('Game_project/font/Pixeltype.ttf', 50)
 font_2 = pygame.font.Font('Game_project/font/Pixeltype.ttf', 100)
 
 #Alien
-ALIEN_SPAWN_RIGHT = 1
-ALIEN_SPAWN_LEFT = 2
-SPAWN_SIDE = [ALIEN_SPAWN_LEFT,ALIEN_SPAWN_RIGHT]
-random_spawn1_side = random.choice(SPAWN_SIDE)
+
 EJE_1_X_ALIEN1 = -15
 EJE_2_X_ALIEN1 = 515
 EJE_Y_ALIEN1 = SCREEN_HEIGHT - 375
-ALIEN_SPEED_MOVEMENT1 = 5
-ALIEN1_SURF = pygame.image.load('Game_project/Graphics/Enemies/Enemies A/enemies_A_ 1.png').convert_alpha()
-ALIEN1_RECT_Left = ALIEN1_SURF.get_rect(center=(EJE_1_X_ALIEN1,EJE_Y_ALIEN1))
-ALIEN1_RECT_Right = ALIEN1_SURF.get_rect(center=(EJE_2_X_ALIEN1,EJE_Y_ALIEN1))
-ALIEN_ALIVE = True
-ALIEN_RESPAWN_COOLDOWN = 30
 
-#bullet_enemie_surf = pygame.image.load('Game_project/Graphics/Enemies/bullet_enemies.png').convert_alpha()
-#bullet_enemie_rect = bullet_enemie_surf.get_rect(center = (0, 0))
+ALIEN_ALIVE = True
 
 score_surf = font.render(f'Score: {Score}', False, 'White')
 score_rect = score_surf.get_rect(midtop = (85, 25))
 
-#Alien Shooting
-shooting_positions = [50,125,200,250,300,375,450]
-bullet_enemie_surf = pygame.image.load('Game_project/Graphics/Enemies/bullet_enemies.png').convert_alpha()
-bullet1 = []
-ALIEN_SHOOT_TIME = 50
-alien_shoot_time = ALIEN_SHOOT_TIME
-ALIEN_SPEED_SHOT = 5
 alien_shoot_x = EJE_1_X_ALIEN1
 alien_shoot_y = EJE_Y_ALIEN1
 bullet_enemie_rect = pygame.Rect(alien_shoot_x, alien_shoot_y, 10,10)
@@ -138,31 +122,8 @@ def screen_backgrounds(Cont):
         screen.blit(backgrounds[index_backgrounds[i]], rect)
         i += 1
 
-def alien_movement(alien_rect):
-    global ALIEN_SPEED_MOVEMENT1
-    if alien_rect.left <= SCREEN_WIDTH - 560 or alien_rect.right >= SCREEN_WIDTH + 60:
-        ALIEN_SPEED_MOVEMENT1 *= -1
-
-def alien_shooting():
-    for alien_bullets in bullet1:
-        alien_bullets.y += ALIEN_SPEED_SHOT
-
-def draw_alien_bullets():
-    for alien_bullets in bullet1:
-        screen.blit(bullet_enemie_surf,alien_bullets)
-        if alien_bullets.y > SCREEN_HEIGHT:
-            bullet1.remove(alien_bullets)
-
-def move_alien_bullets(alien_rect):
-    global alien_shoot_time
-    if alien_shoot_time > 0:
-        alien_shoot_time -= 1
-    if alien_shoot_time == 0:
-        alien_bullets = pygame.Rect(alien_rect.centerx, alien_rect.centery, 10,10)
-        bullet1.append(alien_bullets)
-        alien_shoot_time = ALIEN_SHOOT_TIME
-
 player = Player(SCREEN_WIDTH,SCREEN_HEIGHT)
+Alien = alien('A', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN1, SCREEN_WIDTH, SCREEN_HEIGHT)
 
 while True:
     # Check events
@@ -256,6 +217,7 @@ while True:
 
         player.update(screen, bullet_enemie_rect)
         Game_active = player.colisions(bullet_enemie_rect, Game_active)
+        Alien.alien_update(screen)
 
         #level 1
         if LEVEL == 1:
@@ -263,28 +225,17 @@ while True:
                 LEVEL_CHANGES = level_changes(LEVEL_CHANGES)
             
             if ALIEN_ALIVE == True:
-                if random_spawn1_side == ALIEN_SPAWN_LEFT:
-                    ALIEN1_RECT_Left.x -= ALIEN_SPEED_MOVEMENT1
-                    screen.blit(ALIEN1_SURF,ALIEN1_RECT_Left)
-                    alien_movement(ALIEN1_RECT_Left)
-                    alien_shooting()
-                    draw_alien_bullets()
-                    move_alien_bullets(ALIEN1_RECT_Left)
-                    player.alien_colision(ALIEN1_RECT_Right)
+                Alien.choose_spawn(screen)
+                
+                #    player_shot_hit(ALIEN1_RECT_Left)
                 #    ALIEN_ALIVE = False
                 #    if ALIEN_RESPAWN_COOLDOWN > 0:
                 #        ALIEN_RESPAWN_COOLDOWN -= 1
                 #    if ALIEN_RESPAWN_COOLDOWN == 0:
                 #        ALIEN_ALIVE = True 
                 #        ALIEN_RESPAWN_COOLDOWN = 30
-                if random_spawn1_side == ALIEN_SPAWN_RIGHT:
-                    ALIEN1_RECT_Right.x -= ALIEN_SPEED_MOVEMENT1
-                    screen.blit(ALIEN1_SURF,ALIEN1_RECT_Right)
-                    alien_movement(ALIEN1_RECT_Right)
-                    alien_shooting()
-                    draw_alien_bullets()
-                    move_alien_bullets(ALIEN1_RECT_Right)
-                    player.alien_colision(ALIEN1_RECT_Right)
+
+                #    player_shot_hit(ALIEN1_RECT_Right)
                 #    ALIEN_ALIVE = False
                 #    if ALIEN_RESPAWN_COOLDOWN > 0:
                 #        ALIEN_RESPAWN_COOLDOWN -= 1
