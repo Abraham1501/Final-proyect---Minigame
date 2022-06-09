@@ -9,6 +9,7 @@ class Player(pygame.sprite.Sprite):
         self.EJE_X_PLAYER = SCREEN_WIDTH // 2
         self.EJE_Y_PLAYER = SCREEN_HEIGHT - 110
         self.EJE_X_PLAYER_STARTING = SCREEN_WIDTH // 2
+
         #player shoot
         self.Shoot = False
         self.EJE_X_SHOOT = self.EJE_X_PLAYER
@@ -16,26 +17,28 @@ class Player(pygame.sprite.Sprite):
         self.SHOOT_TIME = 20
         self.Shoot_time = self.SHOOT_TIME
         self.SPEED_SHOOT = 15
+
         #player move
         self.Move_left = False
         self.Move_right = False
-        self.SPEED_MOVEMENT = 6
+        self.SPEED_MOVEMENT = 5
+
         #player
         player_surf = pygame.image.load('Game_project/Graphics/Player/player_1.png').convert_alpha()
         self.player_surf = player_surf
         self.player_rect = player_surf.get_rect(center=(self.EJE_X_PLAYER, self.EJE_Y_PLAYER))
+
         bullet_player_surf = pygame.image.load('Game_project/Graphics/Player/bullet_player_1.png').convert_alpha()
         self.bullet_player_surf = bullet_player_surf
         self.bullet_player_rect = self.bullet_player_surf.get_rect(center=(self.EJE_X_SHOOT, self.EJE_Y_SHOOT))
-
         self.bullets = []
 
         # sounds player
-        sound_player = pygame.mixer.Sound('Game_project/Sounds/shoot_player_sound.mp3')
-        self.sound_player = sound_player
-        self.sound_player.set_volume(0.1)
-        sound_died_player = pygame.mixer.Sound('Game_project/Sounds/died_player.mp3')
-        self.sound_died_player = sound_died_player
+        #sound_player = pygame.mixer.Sound('Game_project/Sounds/shoot_player_sound.mp3')
+        #self.sound_player = sound_player
+        #self.sound_player.set_volume(0.1)
+        #sound_died_player = pygame.mixer.Sound('Game_project/Sounds/died_player.mp3')
+        #self.sound_died_player = sound_died_player
 
     def chek_inputs(self, event):
         if event.type == pygame.KEYDOWN:
@@ -88,7 +91,7 @@ class Player(pygame.sprite.Sprite):
             self.Shoot_time -= 1
         if self.Shoot and self.Shoot_time == 0:
             self.Shoot_time = self.SHOOT_TIME
-            self.sound_player.play()
+            #self.sound_player.play()
             self.bullets.append(self.bullet_player_surf.get_rect(center=(self.EJE_X_SHOOT, self.EJE_Y_SHOOT)))
         self.bullets = move_bullets()
         screen_bullets()
@@ -96,8 +99,12 @@ class Player(pygame.sprite.Sprite):
     def colisions(self, bullet_enemie_rect, Game_active):
         if self.player_rect.colliderect(bullet_enemie_rect):
             Game_active = False
-            self.sound_died_player.play()
+           # self.sound_died_player.play()
         return Game_active
+
+    def alien_colision(self,alien_rect):
+        if self.bullet_player_rect.colliderect(alien_rect):
+            print("hit")
 
     def starting(self):
         self.EJE_X_PLAYER = self.EJE_X_PLAYER_STARTING
