@@ -1,8 +1,8 @@
 import pygame
 from sys import exit
 import random
-from Object_classes import Player
-from Alien_Class import alien
+from Object_classes import Player, alien
+#from Alien_Class import alien
 
 pygame.init()
 
@@ -36,6 +36,10 @@ EJE_Y_ALIEN1 = SCREEN_HEIGHT - 375
 EJE_Y_ALIEN2 = SCREEN_HEIGHT - 465
 EJE_Y_ALIEN3 = SCREEN_HEIGHT - 555
 
+ALIEN_SPEED1 = 2.5
+ALIEN_SPEED2 = 1.5
+ALIEN_SPEED3 = 0.5
+
 ALIEN_ALIVE = True
 
 score_surf = font.render(f'Score: {Score}', False, 'White')
@@ -43,6 +47,7 @@ score_rect = score_surf.get_rect(midtop = (85, 25))
 
 alien_shoot_x = EJE_1_X_ALIEN1
 alien_shoot_y = EJE_Y_ALIEN1
+
 bullet_enemie_rect = pygame.Rect(alien_shoot_x, alien_shoot_y, 10,10)
 
 #backgrounds
@@ -123,11 +128,14 @@ def screen_backgrounds(Cont):
         screen.blit(backgrounds[index_backgrounds[i]], rect)
         i += 1
 
-player = Player(SCREEN_WIDTH,SCREEN_HEIGHT)
-bullet_player_rect = player.bullet_player_rect
-Alien1 = alien('A', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN1, SCREEN_WIDTH, SCREEN_HEIGHT)
-Alien2 = alien('B', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN2, SCREEN_WIDTH, SCREEN_HEIGHT)
-Alien3 = alien('C', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN3, SCREEN_WIDTH, SCREEN_HEIGHT)
+def player_bullet_hit(bullet_player,alien_rect):
+    if bullet_player.colliderect(alien_rect):
+        print("hit")
+
+player = Player(SCREEN_WIDTH,SCREEN_HEIGHT,ALIEN_ALIVE)
+Alien1 = alien('A', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN1, SCREEN_WIDTH, SCREEN_HEIGHT,3,ALIEN_ALIVE)
+Alien2 = alien('B', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN2, SCREEN_WIDTH, SCREEN_HEIGHT,2,ALIEN_ALIVE)
+Alien3 = alien('C', EJE_1_X_ALIEN1, EJE_2_X_ALIEN1, EJE_Y_ALIEN3, SCREEN_WIDTH, SCREEN_HEIGHT,1,ALIEN_ALIVE)
 
 while True:
     # Check events
@@ -219,23 +227,35 @@ while True:
             Game_active = False
             LEVEL = -2
 
-        player.update(screen, bullet_enemie_rect)
-        Game_active = player.colisions(bullet_enemie_rect, Game_active)
-        Alien1.alien_update(screen)
-        Alien2.alien_update(screen)
-        Alien3.alien_update(screen)
+        player.update(screen, bullet_enemie_rect, Alien1.alien_rect_left, Alien1.alien_rect_right, Alien2.alien_rect_left, Alien2.alien_rect_right, Alien3.alien_rect_left, Alien3.alien_rect_right)
+        Alien1.alien_update(screen,player.player_rect)
+        Alien2.alien_update(screen,player.player_rect)
+        Alien3.alien_update(screen,player.player_rect)
+        #player_bullet_hit(player.bullet_player_rect,player.player_rect)
 
         #level 1
         if LEVEL == 1:
             if LEVEL_CHANGES > 0:
                 LEVEL_CHANGES = level_changes(LEVEL_CHANGES)
             
+            #player.colisions()
             if ALIEN_ALIVE == True:
-                Alien1.choose_spawn(screen)
-                if bullet_player_rect.colliderect(Alien1.alien_rect_left) or bullet_player_rect.colliderect(Alien1.alien_rect_right):
-                    print("hit")
-                Alien2.choose_spawn(screen)
-                Alien3.choose_spawn(screen)
+                Alien1.choose_spawn(screen,player.player_rect)
+                Alien2.choose_spawn(screen,player.player_rect)
+                Alien3.choose_spawn(screen,player.player_rect)
+
+            #if abs(player.bullet_player_rect.bottom - Alien1.alien_rect_left.top) <= 10:
+            #    print("hit")
+            #    Alien1.kill()
+            #if abs(player.bullet_player_rect.bottom - Alien1.alien_rect_right.top) <= 10:
+            #    print("hit")
+            #    Alien1.kill()
+            #if player.bullet_player_rect.x == Alien1.alien_rect_left.x:
+            #    print("hit")
+            #    Alien1.kill()
+            #if player.bullet_player_rect.x == Alien1.alien_rect_right.x:
+            #    print("hit")
+            #    Alien1.kill()
                 
                 #    player_shot_hit(ALIEN1_RECT_Left)
                 #    ALIEN_ALIVE = False
