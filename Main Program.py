@@ -25,7 +25,7 @@ pygame.display.set_caption(GAME_NAME)
 clock = pygame.time.Clock()
 
 # Elements
-font = pygame.font.Font('Game_project/font/Pixeltype.ttf', 50)
+font = pygame.font.Font('Game_project/font/Pixeltype.ttf', 50) 
 font_2 = pygame.font.Font('Game_project/font/Pixeltype.ttf', 100)
 sound_level_change = pygame.mixer.Sound('Game_project/Sounds/level_change.mp3')
 soundtrack= pygame.mixer.Sound('Game_project/Sounds/soundtrack.mp3')
